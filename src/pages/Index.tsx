@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { gsap } from "gsap";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth(); // This will auto-create profile when user signs in
+  
   useEffect(() => {
     if (!heroRef.current) return;
     const ctx = gsap.context(() => {
@@ -17,21 +19,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground" ref={heroRef}>
-      <header className="container flex items-center justify-between py-6">
-        <a href="/" className="font-display text-2xl tracking-widest">MicroCTF</a>
-        <div className="flex items-center gap-3">
-          <SignedIn>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
-          <SignedOut>
-            <SignInButton>
-              <Button variant="outline">Sign in</Button>
-            </SignInButton>
-          </SignedOut>
-        </div>
-      </header>
-
-      <main className="container flex flex-col items-center justify-center text-center py-20">
+      <main className="container flex flex-col items-center justify-center text-center py-20 min-h-screen">
         <h1 className="hero-title font-display text-5xl md:text-6xl font-semibold tracking-wider mb-4">
           MicroCTF — Dark Cyberpunk Mini CTF
         </h1>
@@ -45,7 +33,18 @@ const Index = () => {
           <a href="/leaderboard" className="hero-cta">
             <Button variant="secondary">Leaderboard</Button>
           </a>
+          <a href="/contest" className="hero-cta">
+            <Button variant="outline">Join Contest</Button>
+          </a>
         </div>
+        
+        {user && (
+          <div className="mt-8 p-4 bg-primary/5 border border-primary/20 rounded-lg animate-fade-in">
+            <p className="text-sm text-primary">
+              Welcome back! Ready to solve some challenges? 🚀
+            </p>
+          </div>
+        )}
       </main>
     </div>
   );
