@@ -14,7 +14,181 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      challenges: {
+        Row: {
+          category: string
+          created_at: string | null
+          created_by: string | null
+          description: string
+          difficulty: string
+          flag: string
+          hint: string | null
+          id: string
+          is_active: boolean | null
+          points: number
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          created_by?: string | null
+          description: string
+          difficulty: string
+          flag: string
+          hint?: string | null
+          id?: string
+          is_active?: boolean | null
+          points: number
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string
+          difficulty?: string
+          flag?: string
+          hint?: string | null
+          id?: string
+          is_active?: boolean | null
+          points?: number
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contests: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_time: string
+          id: string
+          is_active: boolean | null
+          name: string
+          start_time: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_time: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          start_time: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_time?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          display_name: string | null
+          email: string
+          id: string
+          total_points: number | null
+          updated_at: string | null
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          email: string
+          id: string
+          total_points?: number | null
+          updated_at?: string | null
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          email?: string
+          id?: string
+          total_points?: number | null
+          updated_at?: string | null
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      submissions: {
+        Row: {
+          challenge_id: string
+          id: string
+          is_correct: boolean | null
+          points_awarded: number | null
+          submitted_at: string | null
+          submitted_flag: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          id?: string
+          is_correct?: boolean | null
+          points_awarded?: number | null
+          submitted_at?: string | null
+          submitted_flag: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          id?: string
+          is_correct?: boolean | null
+          points_awarded?: number | null
+          submitted_at?: string | null
+          submitted_flag?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
