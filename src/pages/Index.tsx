@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { gsap } from "gsap";
 import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -27,15 +28,15 @@ const Index = () => {
           Practice challenges across Web, Crypto, Reversing, Forensics, OSINT, Network, Stego and Misc with instant feedback and a realtime leaderboard.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <a href="/challenges" className="hero-cta">
+          <Link to="/challenges" className="hero-cta">
             <Button variant="neon">Explore Challenges</Button>
-          </a>
-          <a href="/leaderboard" className="hero-cta">
+          </Link>
+          <Link to="/leaderboard" className="hero-cta">
             <Button variant="secondary">Leaderboard</Button>
-          </a>
-          <a href="/contest" className="hero-cta">
+          </Link>
+          <Link to="/contest" className="hero-cta">
             <Button variant="outline">Join Contest</Button>
-          </a>
+          </Link>
         </div>
         
         {user && (
