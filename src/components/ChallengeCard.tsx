@@ -89,6 +89,7 @@ const ChallengeCard = ({ challenge, userSubmissions }: ChallengeCardProps) => {
         body: {
           challengeId: challenge.id,
           submittedFlag: flag.trim(),
+          userId: profile.user_id,
         },
       });
 

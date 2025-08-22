@@ -15,37 +15,16 @@ serve(async (req) => {
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     )
 
-    // Get user from JWT
-    const {
-      data: { user },
-      error: userError,
-    } = await supabaseClient.auth.getUser()
+    const { challengeId, submittedFlag, userId } = await req.json()
 
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      )
-    }
-
-    const { challengeId, submittedFlag } = await req.json()
-
-    if (!challengeId || !submittedFlag) {
+    if (!challengeId || !submittedFlag || !userId) {
       return new Response(
         JSON.stringify({ 
           success: false,
-          error: 'Missing challengeId or submittedFlag' 
+          error: 'Missing challengeId, submittedFlag, or userId' 
         }),
         {
           status: 400,
@@ -54,12 +33,14 @@ serve(async (req) => {
       )
     }
 
-    // Get user profile
+    console.log('Processing flag submission for user:', userId, 'challenge:', challengeId)
+
+    // Get user profile using Clerk user ID
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
-      .select('id')
-      .eq('user_id', user.id)
-      .single()
+      .select('id, total_points')
+      .eq('user_id', userId)
+      .maybeSingle()
 
     if (profileError || !profile) {
       console.error('Profile error:', profileError)
@@ -104,7 +85,7 @@ serve(async (req) => {
       .eq('user_id', profile.id)
       .eq('challenge_id', challengeId)
       .eq('is_correct', true)
-      .single()
+      .maybeSingle()
 
     if (existingSolve) {
       return new Response(

@@ -37,4 +37,7 @@ enabled = true
 port = 54330
 
 [functions.submit-flag]
-verify_jwt = true
+verify_jwt = false
+
+[functions.sync-user-profile]
+verify_jwt = false

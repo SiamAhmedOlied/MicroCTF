@@ -12,11 +12,11 @@ export const useAuth = () => {
     queryFn: async () => {
       if (!user?.id) return null;
       
-      const { data, error } = await supabase
+       const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
       return data;
@@ -24,35 +24,20 @@ export const useAuth = () => {
     enabled: !!user?.id,
   });
 
-  // Create or update profile
+  // Create or update profile using edge function
   const createOrUpdateProfile = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("No user found");
 
-      // First try to get existing profile
-      const { data: existingProfile } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
-
-      const profileData = {
-        ...(existingProfile && { id: existingProfile.id }),
-        user_id: user.id,
-        email: user.emailAddresses[0]?.emailAddress || "",
-        username: user.username || "",
-        display_name: user.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : user.username || "",
-        avatar_url: user.imageUrl || "",
-      };
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .upsert(profileData, { 
-          onConflict: "user_id",
-          ignoreDuplicates: false 
-        })
-        .select()
-        .single();
+      const { data, error } = await supabase.functions.invoke("sync-user-profile", {
+        body: {
+          userId: user.id,
+          email: user.emailAddresses[0]?.emailAddress || "",
+          username: user.username || "",
+          displayName: user.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : user.username || "",
+          avatarUrl: user.imageUrl || "",
+        },
+      });
 
       if (error) throw error;
       return data;
